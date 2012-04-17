@@ -17,32 +17,33 @@
 #define MAXITE 30
 #define BETA 0.0001
 #define h 1
-#define FILENAME "nitz.jpg"
+#define FILENAME "pepper_8192.jpg"
 #define NOISELEVEL 0.00
+#define CHUNKSIZE 512
 
-double z_r[2000][2000];
-double z_g[2000][2000];
-double z_b[2000][2000];
+double * z_r;
+double * z_g;
+double * z_b;
 
-double r[2000][2000];
-double g[2000][2000];
-double b[2000][2000];
+double * r;
+double * g;
+double * b;
 
-double ux_r[2000][2000];
-double ux_g[2000][2000];
-double ux_b[2000][2000];
+double * ux_r;
+double * ux_g;
+double * ux_b;
 
-double uy_r[2000][2000];
-double uy_g[2000][2000];
-double uy_b[2000][2000];
+double * uy_r;
+double * uy_g;
+double * uy_b;
 
-double d_r[2000][2000];
-double d_g[2000][2000];
-double d_b[2000][2000];
+double * d_r;
+double * d_g;
+double * d_b;
 
-double dd_r[2000][2000];
-double dd_g[2000][2000];
-double dd_b[2000][2000];
+double * dd_r;
+double * dd_g;
+double * dd_b;
 
 int width, height;
 
@@ -83,9 +84,20 @@ void loadImage(){
 	cv::Mat_<float> color_matrix(width*height, 3);
 	cv::Vec3b vec3b;
 	int index = 0;
+r = (double*)malloc(height*sizeof(double));
+g = (double*)malloc(height*sizeof(double));
+b = (double*)malloc(height*sizeof(double));
+
+z_r = (double*)malloc(height*sizeof(double));
+z_g = (double*)malloc(height*sizeof(double));
+z_b = (double*)malloc(height*sizeof(double));
+
 	for (int y = 0; y < img.rows; ++y) {
 		for (int x = 0; x < img.cols; ++x)
 		{
+
+
+/*
 			vec3b = img(y, x);
 			r[y][x] = float( vec3b[0]);
 			g[y][x] = float( vec3b[1]);
@@ -111,6 +123,7 @@ void loadImage(){
 			if (b[y][x]>255){b[y][x]=255;}
 			if (b[y][x]<0){b[y][x]=0;}
 			z_b[y][x] = b[y][x];
+*/
 
 		}
 	}
@@ -119,17 +132,35 @@ void loadImage(){
 
 int main()
 {
+
+printf("Initializing...");
 // Init MPI
 MPI::Init();
 
+// Load Image
+loadImage();
+
 // Declare Internal Variable
-int p, id;
+int p, id, totalpixel;
+totalpixel = width * height; 
 
 //  Get the number of processes.
 p = MPI::COMM_WORLD.Get_size();
 
 //  Get the individual process ID.
 id = MPI::COMM_WORLD.Get_rank();
+
+// Root malloc
+if (id==0){
+
+}
+
+
+
+
+
+
+printf("From %d\n", id);
 
 // MPI::COMM_WORLD.Send ( &h[1], 1, MPI::DOUBLE, id-1, tag );
 
